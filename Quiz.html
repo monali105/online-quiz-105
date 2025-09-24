@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Quiz Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .subjects, .options {
+      display: grid;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #357abd;
+    }
+    .hidden { display: none; }
+    .result {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="title">Choose a Subject</h2>
+    <div id="subject-screen" class="subjects">
+      <button onclick="startQuiz('math')">Math</button>
+      <button onclick="startQuiz('science')">Science</button>
+      <button onclick="startQuiz('gk')">General Knowledge</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <h3 id="question"></h3>
+      <div id="options" class="options"></div>
+      <button id="next-btn" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2>Quiz Completed!</h2>
+      <p class="result" id="score"></p>
+      <button onclick="restartQuiz()">Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const quizzes = {
+      math: [
+        { q: "5 + 7 = ?", options: ["10", "11", "12", "13"], answer: 2 },
+        { q: "12 × 2 = ?", options: ["22", "24", "26", "28"], answer: 1 },
+        { q: "Square root of 81?", options: ["7", "8", "9", "10"], answer: 2 },
+        { q: "15 ÷ 3 = ?", options: ["3", "4", "5", "6"], answer: 2 }
+      ],
+      science: [
+        { q: "Water formula?", options: ["H2", "O2", "H2O", "CO2"], answer: 2 },
+        { q: "Earth revolves around?", options: ["Moon", "Sun", "Mars", "Star"], answer: 1 },
+        { q: "Human blood color?", options: ["Blue", "Red", "Green", "Yellow"], answer: 1 },
+        { q: "Gas we breathe?", options: ["Oxygen", "Carbon", "Nitrogen", "Helium"], answer: 0 }
+      ],
+      gk: [
+        { q: "National animal of India?", options: ["Lion", "Tiger", "Elephant", "Peacock"], answer: 1 },
+        { q: "Capital of India?", options: ["Delhi", "Mumbai", "Kolkata", "Chennai"], answer: 0 },
+        { q: "Largest continent?", options: ["Africa", "Europe", "Asia", "Australia"], answer: 2 },
+        { q: "How many colors in Rainbow?", options: ["5", "6", "7", "8"], answer: 2 }
+      ]
+    };
+
+    let currentQuiz = [];
+    let currentIndex = 0;
+    let score = 0;
+
+    function startQuiz(subject) {
+      currentQuiz = quizzes[subject];
+      currentIndex = 0;
+      score = 0;
+      document.getElementById("subject-screen").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const questionObj = currentQuiz[currentIndex];
+      document.getElementById("question").innerText = questionObj.q;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      questionObj.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      if (selected === currentQuiz[currentIndex].answer) {
+        score++;
+      }
+      document.querySelectorAll("#options button").forEach(btn => btn.disabled = true);
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < currentQuiz.length) {
+        showQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function endQuiz() {
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+      document.getElementById("score").innerText = `Your Score: ${score} / ${currentQuiz.length}`;
+    }
+
+    function restartQuiz() {
+      document.getElementById("result-screen").classList.add("hidden");
+      document.getElementById("subject-screen").classList.remove("hidden");
+      document.getElementById("title").innerText = "Choose a Subject";
+    }
+  </script>
+</body>
+</html>
